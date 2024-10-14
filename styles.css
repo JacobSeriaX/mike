@@ -1,156 +1,402 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #e8e8e8;
+/* CSS-переменные для цветовой схемы и других общих свойств */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #ecf0f1;
+    --accent-color: #e74c3c;
+    --success-color: #27ae60;
+    --font-family: 'Roboto', sans-serif;
+    --transition-speed: 0.3s;
+}
+
+/* Импортируем шрифт из Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    line-height: 1.6;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--secondary-color);
     color: #333;
-}
-
-header {
-    background-color: #007bff;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    font-size: 1.8em;
-}
-
-.catalog {
+    line-height: 1.6;
+    min-height: 100vh;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 20px;
-    gap: 20px;
+    flex-direction: column;
 }
 
+/* Стилизация заголовка */
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Основной контент */
+main {
+    flex: 1;
+    padding: 20px;
+}
+
+/* Секции */
+section {
+    margin-bottom: 40px;
+}
+
+section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+/* Каталог товаров */
+.catalog-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Три колонки */
+    gap: 20px;
+    justify-items: center;
+}
+
+/* Карточка товара */
 .item {
     background-color: white;
     border: 1px solid #ddd;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    text-align: center;
-    width: 220px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    width: 100%;
+    max-width: 300px;
     cursor: pointer;
-    transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .item:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
 .item img {
-    max-width: 100%;
+    width: 100%;
     height: auto;
+    object-fit: cover;
+}
+
+.item-content {
+    padding: 15px;
+    text-align: center;
+}
+
+.item-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+.item-content p {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Секция Чеков */
+.receipts-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Три колонки */
+    gap: 20px;
+    justify-items: center;
+}
+
+/* Чек */
+.receipt {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 600px; /* Увеличиваем максимальную ширину для размещения деталей */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeIn var(--transition-speed) ease-in-out;
+    position: relative;
+    display: flex;
+    flex-direction: row; /* Размещаем элементы в строку */
+    align-items: flex-start;
+}
+
+/* Контейнер для деталей чека */
+.receipt-details {
+    width: 60%; /* Ширина деталей */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Изображение чека */
+.receipt img {
+    width: 40%; /* Ширина изображения */
+    height: auto;
+    object-fit: cover;
     border-radius: 5px;
+    margin-left: 20px; /* Отступ слева от деталей */
+}
+
+/* Заголовок чека */
+.receipt-details h3 {
+    color: var(--primary-color);
     margin-bottom: 10px;
 }
 
+/* Параграфы в деталях чека */
+.receipt-details p {
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.receipt-details strong {
+    color: var(--primary-color);
+}
+
+/* Кнопки */
+.button-group {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.button-group button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+.print-button {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.print-button:hover {
+    background-color: #1e8449;
+    transform: translateY(-2px);
+}
+
+.delete-button {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* Модальное окно */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(44, 62, 80, 0.8);
     overflow: auto;
-    align-items: center;
-    justify-content: center;
+    animation: fadeIn var(--transition-speed) ease-in-out;
+}
+
+.modal.show {
+    display: block;
 }
 
 .modal-content {
     background-color: white;
     margin: 5% auto;
     padding: 30px;
-    border: 1px solid #888;
+    border-radius: 10px;
     width: 90%;
     max-width: 600px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: slideDown var(--transition-speed) ease-in-out;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); }
+    to { transform: translateY(0); }
+}
+
+/* Закрывающая кнопка */
 .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: var(--accent-color);
+    font-size: 1.5rem;
     font-weight: bold;
     cursor: pointer;
+    transition: color var(--transition-speed);
 }
 
-.close:hover,
-.close:focus {
-    color: #555;
-    text-decoration: none;
-    cursor: pointer;
+.close:hover {
+    color: #c0392b;
+}
+
+/* Формы */
+form {
+    margin-top: 20px;
 }
 
 form label {
     display: block;
-    margin: 10px 0;
-    font-weight: bold;
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: #333;
 }
 
-form input[type="text"],
-form input[type="number"],
-form input[type="date"],
+form input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
 form select,
-form textarea {
+form textarea,
+form input[type="number"],
+form input[type="text"],
+form input[type="date"] {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    box-sizing: border-box;
+    font-size: 1rem;
+    transition: border-color var(--transition-speed);
 }
 
-#receipt {
-    display: none;
-    background-color: white;
-    padding: 30px;
-    margin: 20px auto;
-    border-radius: 10px;
-    max-width: 600px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+form select:focus,
+form textarea:focus,
+form input[type="number"]:focus,
+form input[type="text"]:focus,
+form input[type="date"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
 }
 
-button {
-    background-color: #007bff;
+form button {
+    background-color: var(--primary-color);
     color: white;
     border: none;
-    padding: 15px 25px;
+    padding: 12px 20px;
     border-radius: 5px;
+    font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s;
-    font-size: 1em;
-    margin-top: 15px;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+    width: 100%;
+    margin-top: 10px;
 }
 
-button:hover {
-    background-color: #0056b3;
+form button:hover {
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
 }
 
-button:active {
-    transform: scale(0.98);
+/* Анимации для мигания */
+@keyframes blinkRed {
+    0%, 100% { background-color: rgba(231, 76, 60, 0.2); }
+    50% { background-color: rgba(231, 76, 60, 1); }
 }
 
-@media screen and (max-width: 600px) {
-    .item {
-        width: 100%;
+@keyframes blinkYellow {
+    0%, 100% { background-color: rgba(241, 196, 15, 0.2); }
+    50% { background-color: rgba(241, 196, 15, 1); }
+}
+
+@keyframes blinkBlack {
+    0%, 100% { background-color: rgba(0, 0, 0, 0.2); }
+    50% { background-color: rgba(0, 0, 0, 1); }
+}
+
+/* Классы для мигания */
+.blink-red {
+    animation: blinkRed 1s infinite;
+}
+
+.blink-yellow {
+    animation: blinkYellow 1s infinite;
+}
+
+.blink-black {
+    animation: blinkBlack 1s infinite;
+}
+
+/* Медиа-запросы для отзывчивости */
+@media (max-width: 1024px) {
+    .catalog-items,
+    .receipts-list {
+        grid-template-columns: repeat(2, 1fr); /* Две колонки на средних экранах */
     }
+}
+
+@media (max-width: 768px) {
+    .catalog-items,
+    .receipts-list {
+        grid-template-columns: 1fr; /* Одна колонка на маленьких экранах */
+    }
+
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    .item img,
+    .receipt img {
+        height: auto;
+    }
+
     .modal-content {
-        width: 95%;
+        padding: 20px;
+    }
+
+    form button,
+    .receipt button {
+        padding: 10px 15px;
     }
 }
 
-textarea {
-    resize: vertical;
-    min-height: 100px;
-}
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.5rem;
+    }
 
-#receiptContent p {
-    margin: 10px 0;
-    font-size: 1em;
+    .item img,
+    .receipt img {
+        height: auto;
+    }
+
+    .modal-content {
+        padding: 15px;
+    }
+
+    form button,
+    .receipt button {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    section h2 {
+        font-size: 1.5rem;
+    }
 }

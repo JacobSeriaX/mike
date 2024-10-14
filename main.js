@@ -1,23 +1,33 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push, set } from "firebase/database";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { 
+    getDatabase, 
+    ref, 
+    push, 
+    set, 
+    onChildAdded, 
+    onChildRemoved, 
+    remove 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-// Your web app's Firebase configuration
+// Ваши конфигурационные параметры Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyCDANEx7FB-U9Wj8ZItneroCA_sfmEUYAU",
-  authDomain: "pechat-61e3f.firebaseapp.com",
-  projectId: "pechat-61e3f",
-  storageBucket: "pechat-61e3f.appspot.com",
-  messagingSenderId: "33694902344",
-  appId: "1:33694902344:web:43deb2fe82202bbf9a507d"
+    apiKey: "AIzaSyCDANEx7FB-U9Wj8ZItneroCA_sfmEUYAU",
+    authDomain: "pechat-61e3f.firebaseapp.com",
+    projectId: "pechat-61e3f",
+    storageBucket: "pechat-61e3f.appspot.com",
+    messagingSenderId: "33694902344",
+    appId: "1:33694902344:web:43deb2fe82202bbf9a507d"
 };
 
-// Initialize Firebase
+// Инициализация Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
+// Функция для открытия модального окна
 function openModal(fasonName, basePrice, imagePath) {
-    document.getElementById('orderModal').style.display = 'block';
+    const modal = document.getElementById('orderModal');
+    modal.style.display = 'block';
     document.getElementById('modalTitle').innerText = fasonName;
     document.getElementById('basePrice').innerText = `Базовая цена: ${basePrice} сум`;
     document.getElementById('totalAmount').innerText = basePrice;
@@ -25,22 +35,27 @@ function openModal(fasonName, basePrice, imagePath) {
     updateTotal();
 }
 
+// Функция для закрытия модального окна
 function closeModal() {
-    document.getElementById('orderModal').style.display = 'none';
+    const modal = document.getElementById('orderModal');
+    modal.style.display = 'none';
     document.getElementById('orderForm').reset();
     document.getElementById('totalAmount').innerText = '0';
     document.getElementById('remainingAmount').innerText = '0';
 }
 
+// Функция для обновления итоговой суммы
 function updateTotal() {
-    const basePrice = parseInt(document.getElementById('basePrice').innerText.split(' ')[2]);
+    const basePriceText = document.getElementById('basePrice').innerText;
+    const basePrice = parseInt(basePriceText.split(' ')[2], 10);
+
     let total = basePrice;
 
-    const addPocket = document.getElementById('addPocket').checked ? parseInt(document.getElementById('addPocket').value) : 0;
-    const addReflector = document.getElementById('addReflector').checked ? parseInt(document.getElementById('addReflector').value) : 0;
-    const addFrontLogo = document.getElementById('addFrontLogo').checked ? parseInt(document.getElementById('addFrontLogo').value) : 0;
-    const addBackLogo = document.getElementById('addBackLogo').checked ? parseInt(document.getElementById('addBackLogo').value) : 0;
-    const addRibana = document.getElementById('addRibana').checked ? parseInt(document.getElementById('addRibana').value) : 0;
+    const addPocket = document.getElementById('addPocket').checked ? parseInt(document.getElementById('addPocket').value, 10) : 0;
+    const addReflector = document.getElementById('addReflector').checked ? parseInt(document.getElementById('addReflector').value, 10) : 0;
+    const addFrontLogo = document.getElementById('addFrontLogo').checked ? parseInt(document.getElementById('addFrontLogo').value, 10) : 0;
+    const addBackLogo = document.getElementById('addBackLogo').checked ? parseInt(document.getElementById('addBackLogo').value, 10) : 0;
+    const addRibana = document.getElementById('addRibana').checked ? parseInt(document.getElementById('addRibana').value, 10) : 0;
 
     total += addPocket + addReflector + addFrontLogo + addBackLogo + addRibana;
 
@@ -48,13 +63,15 @@ function updateTotal() {
     updateBalance();
 }
 
+// Функция для обновления баланса
 function updateBalance() {
-    const totalAmount = parseInt(document.getElementById('totalAmount').innerText);
-    const depositAmount = parseInt(document.getElementById('depositAmount').value) || 0;
+    const totalAmount = parseInt(document.getElementById('totalAmount').innerText, 10);
+    const depositAmount = parseInt(document.getElementById('depositAmount').value, 10) || 0;
     const remainingAmount = totalAmount - depositAmount;
     document.getElementById('remainingAmount').innerText = remainingAmount;
 }
 
+// Функция для генерации чека и добавления его в Firebase
 function generateReceipt() {
     const fasonName = document.getElementById('modalTitle').innerText;
     const totalAmount = document.getElementById('totalAmount').innerText;
@@ -67,39 +84,20 @@ function generateReceipt() {
     const clientPhone = document.getElementById('clientPhone').value;
     const fasonImagePath = document.getElementById('fasonImagePath').value;
 
-    const addPocket = document.getElementById('addPocket').checked ? 'Добавлен карман (10 000 сум)' : '';
-    const addReflector = document.getElementById('addReflector').checked ? 'Добавлен отражатель (10 000 сум)' : '';
-    const addFrontLogo = document.getElementById('addFrontLogo').checked ? 'Добавлен логотип спереди (10 000 сум)' : '';
-    const addBackLogo = document.getElementById('addBackLogo').checked ? 'Добавлен логотип сзади (10 000 сум)' : '';
-    const addRibana = document.getElementById('addRibana').checked ? 'Добавлена рибана (10 000 сум)' : '';
+    const addPocket = document.getElementById('addPocket').checked ? true : false;
+    const addReflector = document.getElementById('addReflector').checked ? true : false;
+    const addFrontLogo = document.getElementById('addFrontLogo').checked ? true : false;
+    const addBackLogo = document.getElementById('addBackLogo').checked ? true : false;
+    const addRibana = document.getElementById('addRibana').checked ? true : false;
 
-    let receiptContent = `<p><strong>Фасон:</strong> ${fasonName}</p>`;
-    receiptContent += `<img src="${fasonImagePath}" alt="${fasonName}" style="width: 100%; max-width: 300px; margin: 10px 0;">`;
-    receiptContent += `<p class="total-amount"><strong>Итоговая сумма:</strong> ${totalAmount} сум</p>`;
-    receiptContent += `<p class="deposit-amount"><strong>Залог:</strong> ${depositAmount} сум</p>`;
-    if (color) {
-        receiptContent += `<p><strong>Цвет:</strong> ${color}</p>`;
+    // Проверка обязательных полей
+    if (!clientName || !clientPhone) {
+        alert("Пожалуйста, заполните обязательные поля: Имя клиента и Номер телефона клиента.");
+        return;
     }
-    if (addPocket) receiptContent += `<p>${addPocket}</p>`;
-    if (addReflector) receiptContent += `<p>${addReflector}</p>`;
-    if (addFrontLogo) receiptContent += `<p>${addFrontLogo}</p>`;
-    if (addBackLogo) receiptContent += `<p>${addBackLogo}</p>`;
-    if (addRibana) receiptContent += `<p>${addRibana}</p>`;
-    if (notes) {
-        receiptContent += `<p><strong>Примечание:</strong> ${notes}</p>`;
-    }
-    receiptContent += `<p><strong>Дата:</strong> ${date}</p>`;
-    receiptContent += `<p><strong>Имя клиента:</strong> ${clientName}</p>`;
-    receiptContent += `<p><strong>Компания клиента:</strong> ${clientCompany}</p>`;
-    receiptContent += `<p><strong>Телефон клиента:</strong> ${clientPhone}</p>`;
 
-    document.getElementById('receiptContent').innerHTML = receiptContent;
-    document.getElementById('receipt').style.display = 'block';
-    closeModal();
-
-    // Save order to Firebase Realtime Database
-    const db = getDatabase();
-    const ordersRef = ref(db, 'orders');
+    // Сохранение заказа в Firebase Realtime Database
+    const ordersRef = ref(database, 'orders');
     const newOrderRef = push(ordersRef);
     set(newOrderRef, {
         fasonName: fasonName,
@@ -107,36 +105,186 @@ function generateReceipt() {
         depositAmount: depositAmount,
         color: color,
         notes: notes,
-        date: date,
+        date: date, // Дата дедлайна
         clientName: clientName,
         clientCompany: clientCompany,
         clientPhone: clientPhone,
-        addPocket: addPocket !== '' ? true : false,
-        addReflector: addReflector !== '' ? true : false,
-        addFrontLogo: addFrontLogo !== '' ? true : false,
-        addBackLogo: addBackLogo !== '' ? true : false,
-        addRibana: addRibana !== '' ? true : false,
-        fasonImagePath: fasonImagePath
+        addPocket: addPocket,
+        addReflector: addReflector,
+        addFrontLogo: addFrontLogo,
+        addBackLogo: addBackLogo,
+        addRibana: addRibana,
+        fasonImagePath: fasonImagePath,
+        timestamp: Date.now()
+    })
+    .then(() => {
+        // Закрываем модальное окно и сбрасываем форму после успешного сохранения
+        closeModal();
+    })
+    .catch((error) => {
+        alert("Ошибка при сохранении заказа: " + error.message);
     });
 }
 
-function printReceipt() {
-    const receiptElement = document.getElementById('receipt');
-    const totalAmountElement = receiptElement.querySelector('.total-amount');
-    const depositAmountElement = receiptElement.querySelector('.deposit-amount');
-
-    // Скрываем итоговую сумму и залог перед печатью
-    if (totalAmountElement) totalAmountElement.style.display = 'none';
-    if (depositAmountElement) depositAmountElement.style.display = 'none';
-
-    const printContents = receiptElement.innerHTML;
+// Функция для печати чека
+function printReceipt(button) {
+    const receiptElement = button.closest('.receipt');
     const originalContents = document.body.innerHTML;
 
-    document.body.innerHTML = printContents;
+    // Клонируем чек для модификации
+    const receiptClone = receiptElement.cloneNode(true);
+
+    // Скрываем кнопки "Распечатать" и "Удалить" перед печатью
+    const buttons = receiptClone.querySelectorAll('button');
+    buttons.forEach(btn => btn.style.display = 'none');
+
+    // Заменяем содержимое body на клонированный чек
+    document.body.innerHTML = receiptClone.outerHTML;
+
     window.print();
+
+    // Восстанавливаем исходное содержимое страницы
     document.body.innerHTML = originalContents;
 
-    // Восстанавливаем отображение итоговой суммы и залога
-    if (totalAmountElement) totalAmountElement.style.display = 'block';
-    if (depositAmountElement) depositAmountElement.style.display = 'block';
+    // Перезагружаем страницу, чтобы вернуть все обработчики событий
+    window.location.reload();
 }
+
+// Функция для удаления чека
+function deleteReceipt(orderId) {
+    if (confirm("Вы уверены, что хотите удалить этот чек?")) {
+        const orderRef = ref(database, `orders/${orderId}`);
+        remove(orderRef)
+            .then(() => {
+                console.log(`Чек ${orderId} успешно удален.`);
+            })
+            .catch((error) => {
+                alert("Ошибка при удалении чека: " + error.message);
+            });
+    }
+}
+
+// Функция для расчета разницы в днях между двумя датами
+function calculateDaysRemaining(deadlineDate) {
+    const currentDate = new Date();
+    const deadline = new Date(deadlineDate);
+    
+    // Сброс времени до полуночи для точного расчета дней
+    currentDate.setHours(0, 0, 0, 0);
+    deadline.setHours(0, 0, 0, 0);
+    
+    const diffTime = deadline - currentDate;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
+}
+
+// Функция для определения класса мигания на основе оставшихся дней
+function getBlinkClass(daysRemaining) {
+    if (daysRemaining <= 5) {
+        return 'blink-black';
+    } else if (daysRemaining <= 10) {
+        return 'blink-red';
+    } else if (daysRemaining <= 15) {
+        return 'blink-yellow';
+    } else {
+        return ''; // Без мигания
+    }
+}
+
+// Функция для создания и добавления чека в DOM
+function renderReceipt(orderId, orderData) {
+    const {
+        fasonName,
+        totalAmount,
+        depositAmount,
+        color,
+        notes,
+        date,
+        clientName,
+        clientCompany,
+        clientPhone,
+        addPocket,
+        addReflector,
+        addFrontLogo,
+        addBackLogo,
+        addRibana,
+        fasonImagePath,
+        timestamp
+    } = orderData;
+
+    // Вычисляем оставшиеся дни до дедлайна
+    const daysRemaining = calculateDaysRemaining(date);
+
+    // Определяем класс мигания
+    const blinkClass = getBlinkClass(daysRemaining);
+
+    // Создаем новый элемент чека
+    const receiptElement = document.createElement('div');
+    receiptElement.classList.add('receipt');
+    if (blinkClass) {
+        receiptElement.classList.add(blinkClass);
+    }
+    receiptElement.setAttribute('data-id', orderId); // Добавляем атрибут с ID заказа
+
+    let receiptContent = `
+        <div class="receipt-details">
+            <h3>Чек №${timestamp}</h3>
+            <p><strong>Фасон:</strong> ${fasonName}</p>
+            <p><strong>Цвет:</strong> ${color || 'Не выбран'}</p>
+            ${addPocket ? `<p>Добавлен карман (10 000 сум)</p>` : ''}
+            ${addReflector ? `<p>Добавлен отражатель (10 000 сум)</p>` : ''}
+            ${addFrontLogo ? `<p>Добавлен логотип спереди (10 000 сум)</p>` : ''}
+            ${addBackLogo ? `<p>Добавлен логотип сзади (10 000 сум)</p>` : ''}
+            ${addRibana ? `<p>Добавлена рибана (10 000 сум)</p>` : ''}
+            ${notes ? `<p><strong>Примечание:</strong> ${notes}</p>` : ''}
+            <p class="totalAmount"><strong>Итоговая сумма:</strong> ${totalAmount} сум</p>
+            <p class="depositAmount"><strong>Залог:</strong> ${depositAmount} сум</p>
+            <p><strong>Дата:</strong> ${date}</p>
+            <p><strong>Имя клиента:</strong> ${clientName}</p>
+            <p><strong>Компания клиента:</strong> ${clientCompany || 'Не указано'}</p>
+            <p><strong>Телефон клиента:</strong> ${clientPhone}</p>
+            <div class="button-group">
+                <button onclick="printReceipt(this)" class="print-button">Распечатать</button>
+                <button onclick="deleteReceipt('${orderId}')" class="delete-button">Удалить</button>
+            </div>
+        </div>
+        <img src="${fasonImagePath}" alt="${fasonName}">
+    `;
+
+    receiptElement.innerHTML = receiptContent;
+
+    // Добавляем чек в секцию чеков
+    document.getElementById('receiptsList').prepend(receiptElement);
+}
+
+// Установка слушателя для новых заказов
+const ordersRef = ref(database, 'orders');
+onChildAdded(ordersRef, (data) => {
+    renderReceipt(data.key, data.val());
+});
+
+// Установка слушателя для удаленных заказов
+onChildRemoved(ordersRef, (data) => {
+    const receiptToRemove = document.querySelector(`.receipt[data-id="${data.key}"]`);
+    if (receiptToRemove) {
+        receiptToRemove.remove();
+    }
+});
+
+// Закрытие модального окна при клике вне его
+window.onclick = function(event) {
+    const modal = document.getElementById('orderModal');
+    if (event.target == modal) {
+        closeModal();
+    }
+}
+
+// Экспортируем функции в глобальную область видимости
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.updateTotal = updateTotal;
+window.updateBalance = updateBalance;
+window.generateReceipt = generateReceipt;
+window.printReceipt = printReceipt;
+window.deleteReceipt = deleteReceipt;
