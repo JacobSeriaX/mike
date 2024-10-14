@@ -24,6 +24,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
+// Заданный пароль для удаления чеков
+const DELETE_PASSWORD = "0222"; // Замените на ваш пароль
+
 // Функция для открытия модального окна
 function openModal(fasonName, basePrice, imagePath) {
     const modal = document.getElementById('orderModal');
@@ -150,17 +153,25 @@ function printReceipt(button) {
     window.location.reload();
 }
 
-// Функция для удаления чека
+// Функция для удаления чека с проверкой пароля
 function deleteReceipt(orderId) {
-    if (confirm("Вы уверены, что хотите удалить этот чек?")) {
-        const orderRef = ref(database, `orders/${orderId}`);
-        remove(orderRef)
-            .then(() => {
-                console.log(`Чек ${orderId} успешно удален.`);
-            })
-            .catch((error) => {
-                alert("Ошибка при удалении чека: " + error.message);
-            });
+    // Запрашиваем пароль у пользователя
+    const userPassword = prompt("Введите пароль для удаления чека:");
+
+    // Проверяем введённый пароль
+    if (userPassword === DELETE_PASSWORD) {
+        if (confirm("Вы уверены, что хотите удалить этот чек?")) {
+            const orderRef = ref(database, `orders/${orderId}`);
+            remove(orderRef)
+                .then(() => {
+                    console.log(`Чек ${orderId} успешно удален.`);
+                })
+                .catch((error) => {
+                    alert("Ошибка при удалении чека: " + error.message);
+                });
+        }
+    } else {
+        alert("Неверный пароль. Удаление чека отменено.");
     }
 }
 
@@ -240,7 +251,7 @@ function renderReceipt(orderId, orderData) {
             ${notes ? `<p><strong>Примечание:</strong> ${notes}</p>` : ''}
             <p class="totalAmount"><strong>Итоговая сумма:</strong> ${totalAmount} сум</p>
             <p class="depositAmount"><strong>Залог:</strong> ${depositAmount} сум</p>
-            <p><strong>Дата:</strong> ${date}</p>
+            <p><strong>Дата дедлайна:</strong> ${date}</p>
             <p><strong>Имя клиента:</strong> ${clientName}</p>
             <p><strong>Компания клиента:</strong> ${clientCompany || 'Не указано'}</p>
             <p><strong>Телефон клиента:</strong> ${clientPhone}</p>
