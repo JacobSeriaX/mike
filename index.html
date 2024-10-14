@@ -2,145 +2,113 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Платформа заказа спецодежды</title>
+    <title>Платформа Заказов Спецодежды</title>
     <link rel="stylesheet" href="styles.css">
-    <script type="module" defer src="main.js"></script>
 </head>
 <body>
     <header>
-        <h1>Спецодежда: Фасоны</h1>
+        <h1>Платформа Заказов Спецодежды</h1>
     </header>
-    
     <main>
         <!-- Секция Каталога Товаров -->
         <section class="catalog">
-            <h2>Каталог Товаров</h2>
-            <div class="catalog-items">
+            <h2>Каталог Фасонов</h2>
+            <!-- Поле поиска для товаров -->
+            <input type="text" id="itemSearch" placeholder="Поиск фасонов..." oninput="searchItems()">
+            <div class="catalog-items" id="catalogItems">
                 <!-- Пример карточки товара -->
-                <div class="item" onclick="openModal('Фасон 1', 50000, 'img/1.jpg')">
-                    <img src="img/1.jpg" alt="Фасон 1">
+                <!-- Эти элементы должны динамически генерироваться или быть добавлены статически -->
+                <div class="item" onclick="openModal('Фасон А', 100000, 'img/1.jpg')">
+                    <img src="img/1.jpg" alt="Фасон А">
                     <div class="item-content">
-                        <h3>Фасон 1</h3>
-                        <p>Цена: 50 000 сум</p>
+                        <h3>Фасон А</h3>
+                        <p>Описание фасона А</p>
                     </div>
                 </div>
-                <div class="item" onclick="openModal('Фасон 2', 60000, 'images/fason2.jpg')">
-                    <img src="images/fason2.jpg" alt="Фасон 2">
+                <div class="item" onclick="openModal('Фасон Б', 120000, 'path/to/imageB.jpg')">
+                    <img src="path/to/imageB.jpg" alt="Фасон Б">
                     <div class="item-content">
-                        <h3>Фасон 2</h3>
-                        <p>Цена: 60 000 сум</p>
+                        <h3>Фасон Б</h3>
+                        <p>Описание фасона Б</p>
                     </div>
                 </div>
-                <div class="item" onclick="openModal('Фасон 2', 60000, 'images/fason2.jpg')">
-                    <img src="images/fason2.jpg" alt="Фасон 2">
-                    <div class="item-content">
-                        <h3>Фасон 2</h3>
-                        <p>Цена: 60 000 сум</p>
-                    </div>
-                </div>
-                <div class="item" onclick="openModal('Фасон 2', 60000, 'images/fason2.jpg')">
-                    <img src="images/fason2.jpg" alt="Фасон 2">
-                    <div class="item-content">
-                        <h3>Фасон 2</h3>
-                        <p>Цена: 60 000 сум</p>
-                    </div>
-                </div>
-                <div class="item" onclick="openModal('Фасон 2', 60000, 'images/fason2.jpg')">
-                    <img src="images/fason2.jpg" alt="Фасон 2">
-                    <div class="item-content">
-                        <h3>Фасон 2</h3>
-                        <p>Цена: 60 000 сум</p>
-                    </div>
-                </div>
-                <div class="item" onclick="openModal('Фасон 2', 60000, 'images/fason2.jpg')">
-                    <img src="images/fason2.jpg" alt="Фасон 2">
-                    <div class="item-content">
-                        <h3>Фасон 2</h3>
-                        <p>Цена: 60 000 сум</p>
-                    </div>
-                </div>
-                <div class="item" onclick="openModal('Фасон 2', 60000, 'images/fason2.jpg')">
-                    <img src="images/fason2.jpg" alt="Фасон 2">
-                    <div class="item-content">
-                        <h3>Фасон 2</h3>
-                        <p>Цена: 60 000 сум</p>
-                    </div>
-                </div>
-                <div class="item" onclick="openModal('Фасон 2', 60000, 'images/fason2.jpg')">
-                    <img src="images/fason2.jpg" alt="Фасон 2">
-                    <div class="item-content">
-                        <h3>Фасон 2</h3>
-                        <p>Цена: 60 000 сум</p>
-                    </div>
-                </div>
-                <div class="item" onclick="openModal('Фасон 2', 60000, 'images/fason2.jpg')">
-                    <img src="images/fason2.jpg" alt="Фасон 2">
-                    <div class="item-content">
-                        <h3>Фасон 2</h3>
-                        <p>Цена: 60 000 сум</p>
-                    </div>
-                </div>
-                
-                <div class="item" onclick="openModal('Фасон 3', 55000, 'images/fason3.jpg')">
-                    <img src="images/fason3.jpg" alt="Фасон 3">
-                    <div class="item-content">
-                        <h3>Фасон 3</h3>
-                        <p>Цена: 55 000 сум</p>
-                    </div>
-                </div>
-                <!-- Добавьте больше фасонов по аналогии -->
+                <!-- Добавьте другие фасоны по аналогии -->
             </div>
         </section>
 
         <!-- Секция Чеков -->
         <section class="receipts">
             <h2>Чеки</h2>
+            <!-- Поле поиска для чеков -->
+            <input type="text" id="receiptSearch" placeholder="Поиск чеков..." oninput="searchReceipts()">
             <div id="receiptsList" class="receipts-list">
-                <!-- Здесь будут добавляться чеки -->
+                <!-- Чеки будут динамически добавляться сюда -->
             </div>
         </section>
     </main>
 
-    <!-- Модальное окно -->
+    <!-- Модальное окно для заказа -->
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle"></h2>
-            <p id="basePrice"></p>
+            <h2 id="modalTitle">Название Фасона</h2>
+            <p id="basePrice">Базовая цена: 100000 сум</p>
             <form id="orderForm">
-                <label><input type="checkbox" id="addPocket" value="10000" onclick="updateTotal()"> Добавить карман (10 000 сум)</label>
-                <label><input type="checkbox" id="addReflector" value="10000" onclick="updateTotal()"> Добавить отражатель (10 000 сум)</label>
-                <label><input type="checkbox" id="addFrontLogo" value="10000" onclick="updateTotal()"> Добавить логотип спереди (10 000 сум)</label>
-                <label><input type="checkbox" id="addBackLogo" value="10000" onclick="updateTotal()"> Добавить логотип сзади (10 000 сум)</label>
-                <label><input type="checkbox" id="addRibana" value="10000" onclick="updateTotal()"> Добавить рибану (10 000 сум)</label>
-                
-                <label>Выбрать цвет:
-                    <select id="colorSelect">
-                        <option value="">Выберите цвет</option>
-                        <option value="Синий">Синий</option>
+                <!-- Поля формы -->
+                <label>
+                    <input type="checkbox" id="addPocket" value="10000" onclick="updateTotal()"> Добавить карман
+                </label>
+                <label>
+                    <input type="checkbox" id="addReflector" value="10000" onclick="updateTotal()"> Добавить отражатель
+                </label>
+                <label>
+                    <input type="checkbox" id="addFrontLogo" value="10000" onclick="updateTotal()"> Добавить логотип спереди
+                </label>
+                <label>
+                    <input type="checkbox" id="addBackLogo" value="10000" onclick="updateTotal()"> Добавить логотип сзади
+                </label>
+                <label>
+                    <input type="checkbox" id="addRibana" value="10000" onclick="updateTotal()"> Добавить рибану
+                </label>
+                <label>
+                    Цвет:
+                    <select id="colorSelect" onchange="updateTotal()">
+                        <option value="">Не выбран</option>
                         <option value="Красный">Красный</option>
-                        <option value="Зеленый">Зеленый</option>
+                        <option value="Желтый">Желтый</option>
+                        <option value="Черный">Черный</option>
+                        <!-- Добавьте другие цвета по необходимости -->
                     </select>
                 </label>
-                
-                <label>Примечание:
-                    <textarea id="notes" rows="4" cols="50"></textarea>
+                <label>
+                    Дата дедлайна:
+                    <input type="date" id="dateSelect" required>
                 </label>
-                
-                <label>Итог суммы: <span id="totalAmount">0</span> сум</label>
-                <label>Залог суммы: <input type="number" id="depositAmount" onchange="updateBalance()"> сум</label>
-                <label>Сколько он должен: <span id="remainingAmount">0</span> сум</label>
-                
-                <label>Выбор даты: <input type="date" id="dateSelect"></label>
-                <label>Имя клиента: <input type="text" id="clientName" required></label>
-                <label>Компания клиента: <input type="text" id="clientCompany"></label>
-                <label>Номер телефона клиента: <input type="text" id="clientPhone" required></label>
-                <input type="hidden" id="fasonImagePath">
-                
+                <label>
+                    Имя клиента:
+                    <input type="text" id="clientName" required>
+                </label>
+                <label>
+                    Компания клиента:
+                    <input type="text" id="clientCompany">
+                </label>
+                <label>
+                    Телефон клиента:
+                    <input type="text" id="clientPhone" required>
+                </label>
+                <label>
+                    Примечание:
+                    <textarea id="notes"></textarea>
+                </label>
+                <label>
+                    Залог:
+                    <input type="number" id="depositAmount" min="0" value="0" oninput="updateBalance()">
+                </label>
                 <button type="button" onclick="generateReceipt()">Готово</button>
             </form>
         </div>
     </div>
+
+    <script type="module" src="main.js"></script>
 </body>
 </html>

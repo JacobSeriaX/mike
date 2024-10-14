@@ -59,6 +59,23 @@ section h2 {
     text-align: center;
 }
 
+/* Поля поиска */
+section input[type="text"] {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color var(--transition-speed);
+}
+
+section input[type="text"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
 /* Каталог товаров */
 .catalog-items {
     display: grid;
@@ -349,6 +366,11 @@ form button:hover {
     .receipts-list {
         grid-template-columns: repeat(2, 1fr); /* Две колонки на средних экранах */
     }
+
+    /* Изменение максимальной ширины чеков на средних экранах */
+    .receipt {
+        max-width: 500px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -373,6 +395,22 @@ form button:hover {
     form button,
     .receipt button {
         padding: 10px 15px;
+    }
+
+    /* Изменение направления Flexbox для чеков на маленьких экранах */
+    .receipt {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .receipt-details {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .receipt img {
+        width: 80%;
+        margin-left: 0;
     }
 }
 

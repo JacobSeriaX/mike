@@ -25,7 +25,7 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 // Заданный пароль для удаления чеков
-const DELETE_PASSWORD = "0222"; // Замените на ваш пароль
+const DELETE_PASSWORD = "YourSecurePassword123"; // Замените на ваш пароль
 
 // Функция для открытия модального окна
 function openModal(fasonName, basePrice, imagePath) {
@@ -291,6 +291,38 @@ window.onclick = function(event) {
     }
 }
 
+// Функция поиска товаров (фасонов)
+function searchItems() {
+    const query = document.getElementById('itemSearch').value.toLowerCase();
+    const items = document.querySelectorAll('.catalog-items .item');
+
+    items.forEach(item => {
+        const title = item.querySelector('.item-content h3').innerText.toLowerCase();
+        const description = item.querySelector('.item-content p').innerText.toLowerCase();
+        if (title.includes(query) || description.includes(query)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// Функция поиска чеков (заказов)
+function searchReceipts() {
+    const query = document.getElementById('receiptSearch').value.toLowerCase();
+    const receipts = document.querySelectorAll('.receipts-list .receipt');
+
+    receipts.forEach(receipt => {
+        const details = receipt.querySelector('.receipt-details');
+        const texts = Array.from(details.querySelectorAll('p')).map(p => p.innerText.toLowerCase()).join(' ');
+        if (texts.includes(query)) {
+            receipt.style.display = 'flex'; // Восстанавливаем flex, если ранее был скрыт
+        } else {
+            receipt.style.display = 'none';
+        }
+    });
+}
+
 // Экспортируем функции в глобальную область видимости
 window.openModal = openModal;
 window.closeModal = closeModal;
@@ -299,3 +331,5 @@ window.updateBalance = updateBalance;
 window.generateReceipt = generateReceipt;
 window.printReceipt = printReceipt;
 window.deleteReceipt = deleteReceipt;
+window.searchItems = searchItems;
+window.searchReceipts = searchReceipts;
