@@ -147,14 +147,12 @@ section input[type="text"]:focus {
     align-items: flex-start;
 }
 
-/* Контейнер для деталей чека */
 .receipt-details {
     width: 60%; /* Ширина деталей */
     display: flex;
     flex-direction: column;
 }
 
-/* Изображение чека */
 .receipt img {
     width: 40%; /* Ширина изображения */
     height: auto;
@@ -163,13 +161,11 @@ section input[type="text"]:focus {
     margin-left: 20px; /* Отступ слева от деталей */
 }
 
-/* Заголовок чека */
 .receipt-details h3 {
     color: var(--primary-color);
     margin-bottom: 10px;
 }
 
-/* Параграфы в деталях чека */
 .receipt-details p {
     margin-bottom: 8px;
     font-size: 0.95rem;

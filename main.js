@@ -25,24 +25,45 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 // Заданный пароль для удаления чеков
-const DELETE_PASSWORD = "YourSecurePassword123"; // Замените на ваш пароль
+const DELETE_PASSWORD = "123"; // Замените на ваш пароль
 
 // Функция для открытия модального окна
 function openModal(fasonName, basePrice, imagePath) {
     const modal = document.getElementById('orderModal');
+    if (!modal) {
+        console.error('Modal element not found');
+        return;
+    }
     modal.style.display = 'block';
-    document.getElementById('modalTitle').innerText = fasonName;
-    document.getElementById('basePrice').innerText = `Базовая цена: ${basePrice} сум`;
+    const modalTitle = document.getElementById('modalTitle');
+    const basePriceElement = document.getElementById('basePrice');
+    const fasonImagePathInput = document.getElementById('fasonImagePath');
+
+    if (!modalTitle || !basePriceElement || !fasonImagePathInput) {
+        console.error('One or more modal elements not found');
+        return;
+    }
+
+    modalTitle.innerText = fasonName;
+    basePriceElement.innerText = `Базовая цена: ${basePrice} сум`;
     document.getElementById('totalAmount').innerText = basePrice;
-    document.getElementById('fasonImagePath').value = imagePath; // Сохраняем путь к изображению для дальнейшего использования
+    document.getElementById('remainingAmount').innerText = basePrice; // Инициализация оставшейся суммы
+    fasonImagePathInput.value = imagePath; // Сохраняем путь к изображению для дальнейшего использования
     updateTotal();
 }
 
 // Функция для закрытия модального окна
 function closeModal() {
     const modal = document.getElementById('orderModal');
+    if (!modal) {
+        console.error('Modal element not found');
+        return;
+    }
     modal.style.display = 'none';
-    document.getElementById('orderForm').reset();
+    const orderForm = document.getElementById('orderForm');
+    if (orderForm) {
+        orderForm.reset();
+    }
     document.getElementById('totalAmount').innerText = '0';
     document.getElementById('remainingAmount').innerText = '0';
 }
@@ -50,9 +71,10 @@ function closeModal() {
 // Функция для обновления итоговой суммы
 function updateTotal() {
     const basePriceText = document.getElementById('basePrice').innerText;
-    const basePrice = parseInt(basePriceText.split(' ')[2], 10);
+    const basePriceMatch = basePriceText.match(/(\d+)/);
+    const basePrice = basePriceMatch ? parseInt(basePriceMatch[1], 10) : 0;
 
-    let total = basePrice;
+    let total = isNaN(basePrice) ? 0 : basePrice;
 
     const addPocket = document.getElementById('addPocket').checked ? parseInt(document.getElementById('addPocket').value, 10) : 0;
     const addReflector = document.getElementById('addReflector').checked ? parseInt(document.getElementById('addReflector').value, 10) : 0;
@@ -68,7 +90,7 @@ function updateTotal() {
 
 // Функция для обновления баланса
 function updateBalance() {
-    const totalAmount = parseInt(document.getElementById('totalAmount').innerText, 10);
+    const totalAmount = parseInt(document.getElementById('totalAmount').innerText, 10) || 0;
     const depositAmount = parseInt(document.getElementById('depositAmount').value, 10) || 0;
     const remainingAmount = totalAmount - depositAmount;
     document.getElementById('remainingAmount').innerText = remainingAmount;
@@ -132,6 +154,11 @@ function generateReceipt() {
 // Функция для печати чека
 function printReceipt(button) {
     const receiptElement = button.closest('.receipt');
+    if (!receiptElement) {
+        console.error('Receipt element not found');
+        return;
+    }
+
     const originalContents = document.body.innerHTML;
 
     // Клонируем чек для модификации
@@ -269,28 +296,6 @@ function renderReceipt(orderId, orderData) {
     document.getElementById('receiptsList').prepend(receiptElement);
 }
 
-// Установка слушателя для новых заказов
-const ordersRef = ref(database, 'orders');
-onChildAdded(ordersRef, (data) => {
-    renderReceipt(data.key, data.val());
-});
-
-// Установка слушателя для удаленных заказов
-onChildRemoved(ordersRef, (data) => {
-    const receiptToRemove = document.querySelector(`.receipt[data-id="${data.key}"]`);
-    if (receiptToRemove) {
-        receiptToRemove.remove();
-    }
-});
-
-// Закрытие модального окна при клике вне его
-window.onclick = function(event) {
-    const modal = document.getElementById('orderModal');
-    if (event.target == modal) {
-        closeModal();
-    }
-}
-
 // Функция поиска товаров (фасонов)
 function searchItems() {
     const query = document.getElementById('itemSearch').value.toLowerCase();
@@ -314,13 +319,36 @@ function searchReceipts() {
 
     receipts.forEach(receipt => {
         const details = receipt.querySelector('.receipt-details');
+        if (!details) return; // Пропускаем, если нет деталей
         const texts = Array.from(details.querySelectorAll('p')).map(p => p.innerText.toLowerCase()).join(' ');
         if (texts.includes(query)) {
-            receipt.style.display = 'flex'; // Восстанавливаем flex, если ранее был скрыт
+            receipt.style.display = window.innerWidth <= 768 ? 'flex' : 'flex'; // Восстанавливаем flex, если ранее был скрыт
         } else {
             receipt.style.display = 'none';
         }
     });
+}
+
+// Установка слушателя для новых заказов
+const ordersRef = ref(database, 'orders');
+onChildAdded(ordersRef, (data) => {
+    renderReceipt(data.key, data.val());
+});
+
+// Установка слушателя для удаленных заказов
+onChildRemoved(ordersRef, (data) => {
+    const receiptToRemove = document.querySelector(`.receipt[data-id="${data.key}"]`);
+    if (receiptToRemove) {
+        receiptToRemove.remove();
+    }
+});
+
+// Закрытие модального окна при клике вне его
+window.onclick = function(event) {
+    const modal = document.getElementById('orderModal');
+    if (event.target == modal) {
+        closeModal();
+    }
 }
 
 // Экспортируем функции в глобальную область видимости
