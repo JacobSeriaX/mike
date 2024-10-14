@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Платформа заказа спецодежды</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" defer src="main.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Спецодежда: Фасоны</h1>
+    </header>
+    
+    <main>
+        <section class="catalog">
+            <!-- Пример карточки товара -->
+            <div class="item" onclick="openModal('Фасон 1', 50000, 'images/fason1.jpg')">
+                <img src="images/fason1.jpg" alt="Фасон 1">
+                <h2>Фасон 1</h2>
+                <p>Цена: 50 000 сум</p>
+            </div>
+            <div class="item" onclick="openModal('Фасон 2', 60000, 'images/fason2.jpg')">
+                <img src="images/fason2.jpg" alt="Фасон 2">
+                <h2>Фасон 2</h2>
+                <p>Цена: 60 000 сум</p>
+            </div>
+            <!-- Добавьте больше фасонов по аналогии -->
+        </section>
+    </main>
+
+    <!-- Модальное окно -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <p id="basePrice"></p>
+            <form id="orderForm">
+                <label><input type="checkbox" id="addPocket" value="10000" onclick="updateTotal()"> Добавить карман (10 000 сум)</label><br>
+                <label><input type="checkbox" id="addReflector" value="10000" onclick="updateTotal()"> Добавить отражатель (10 000 сум)</label><br>
+                <label><input type="checkbox" id="addFrontLogo" value="10000" onclick="updateTotal()"> Добавить логотип спереди (10 000 сум)</label><br>
+                <label><input type="checkbox" id="addBackLogo" value="10000" onclick="updateTotal()"> Добавить логотип сзади (10 000 сум)</label><br>
+                <label><input type="checkbox" id="addRibana" value="10000" onclick="updateTotal()"> Добавить рибану (10 000 сум)</label><br>
+                
+                <label>Выбрать цвет: 
+                    <select id="colorSelect">
+                        <option value="">Выберите цвет</option>
+                        <option value="Синий">Синий</option>
+                        <option value="Красный">Красный</option>
+                        <option value="Зеленый">Зеленый</option>
+                    </select>
+                </label><br>
+                
+                <label>Примечание:<br>
+                    <textarea id="notes" rows="4" cols="50"></textarea>
+                </label><br>
+                
+                <label>Итог суммы: <span id="totalAmount">0</span> сум</label><br>
+                <label>Залог суммы: <input type="number" id="depositAmount" onchange="updateBalance()"> сум</label><br>
+                <label>Сколько он должен: <span id="remainingAmount">0</span> сум</label><br>
+                
+                <label>Выбор даты: <input type="date" id="dateSelect"></label><br>
+                <label>Имя клиента: <input type="text" id="clientName"></label><br>
+                <label>Компания клиента: <input type="text" id="clientCompany"></label><br>
+                <label>Номер телефона клиента: <input type="text" id="clientPhone"></label><br>
+                <input type="hidden" id="fasonImagePath">
+                
+                <button type="button" onclick="generateReceipt()">Готово</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Чек -->
+    <div id="receipt" class="receipt">
+        <h2>Чек</h2>
+        <div id="receiptContent"></div>
+        <button onclick="printReceipt()">Распечатать</button>
+    </div>
+</body>
+</html>
