@@ -1,4 +1,6 @@
-// Import the functions you need from the SDKs you need
+// main.js
+
+// Импортируем необходимые функции из Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { 
     getDatabase, 
@@ -10,7 +12,7 @@ import {
     remove 
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-// Ваши конфигурационные параметры Firebase
+// Конфигурация Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCDANEx7FB-U9Wj8ZItneroCA_sfmEUYAU",
     authDomain: "pechat-61e3f.firebaseapp.com",
@@ -24,14 +26,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// Заданный пароль для удаления чеков
+// Пароль для удаления чеков
 const DELETE_PASSWORD = "123"; // Замените на ваш пароль
 
-// Функция для открытия модального окна
+// Функция открытия модального окна
 function openModal(fasonName, basePrice, imagePath) {
     const modal = document.getElementById('orderModal');
     if (!modal) {
-        console.error('Modal element not found');
+        console.error('Modal элемент не найден');
         return;
     }
     modal.style.display = 'block';
@@ -40,7 +42,7 @@ function openModal(fasonName, basePrice, imagePath) {
     const fasonImagePathInput = document.getElementById('fasonImagePath');
 
     if (!modalTitle || !basePriceElement || !fasonImagePathInput) {
-        console.error('One or more modal elements not found');
+        console.error('Один или несколько элементов модального окна не найдены');
         return;
     }
 
@@ -52,11 +54,11 @@ function openModal(fasonName, basePrice, imagePath) {
     updateTotal();
 }
 
-// Функция для закрытия модального окна
+// Функция закрытия модального окна
 function closeModal() {
     const modal = document.getElementById('orderModal');
     if (!modal) {
-        console.error('Modal element not found');
+        console.error('Modal элемент не найден');
         return;
     }
     modal.style.display = 'none';
@@ -68,7 +70,7 @@ function closeModal() {
     document.getElementById('remainingAmount').innerText = '0';
 }
 
-// Функция для обновления итоговой суммы
+// Функция обновления итоговой суммы
 function updateTotal() {
     const basePriceText = document.getElementById('basePrice').innerText;
     const basePriceMatch = basePriceText.match(/(\d+)/);
@@ -76,19 +78,24 @@ function updateTotal() {
 
     let total = isNaN(basePrice) ? 0 : basePrice;
 
-    const addPocket = document.getElementById('addPocket').checked ? parseInt(document.getElementById('addPocket').value, 10) : 0;
-    const addReflector = document.getElementById('addReflector').checked ? parseInt(document.getElementById('addReflector').value, 10) : 0;
-    const addFrontLogo = document.getElementById('addFrontLogo').checked ? parseInt(document.getElementById('addFrontLogo').value, 10) : 0;
-    const addBackLogo = document.getElementById('addBackLogo').checked ? parseInt(document.getElementById('addBackLogo').value, 10) : 0;
-    const addRibana = document.getElementById('addRibana').checked ? parseInt(document.getElementById('addRibana').value, 10) : 0;
+    // Добавочные опции
+    const addPocketA = document.getElementById('addPocketA').checked ? parseInt(document.getElementById('addPocketA').value, 10) : 0;
+    const addPocketB = document.getElementById('addPocketB').checked ? parseInt(document.getElementById('addPocketB').value, 10) : 0;
+    const addPocketC = document.getElementById('addPocketC').checked ? parseInt(document.getElementById('addPocketC').value, 10) : 0;
 
-    total += addPocket + addReflector + addFrontLogo + addBackLogo + addRibana;
+    // Убавочные опции
+    const removePocketA = document.getElementById('removePocketA').checked ? parseInt(document.getElementById('removePocketA').value, 10) : 0;
+    const removePocketB = document.getElementById('removePocketB').checked ? parseInt(document.getElementById('removePocketB').value, 10) : 0;
+    const removePocketC = document.getElementById('removePocketC').checked ? parseInt(document.getElementById('removePocketC').value, 10) : 0;
+
+    // Суммируем все добавочные и убавочные опции
+    total += addPocketA + addPocketB + addPocketC + removePocketA + removePocketB + removePocketC;
 
     document.getElementById('totalAmount').innerText = total;
     updateBalance();
 }
 
-// Функция для обновления баланса
+// Функция обновления оставшейся суммы
 function updateBalance() {
     const totalAmount = parseInt(document.getElementById('totalAmount').innerText, 10) || 0;
     const depositAmount = parseInt(document.getElementById('depositAmount').value, 10) || 0;
@@ -96,7 +103,7 @@ function updateBalance() {
     document.getElementById('remainingAmount').innerText = remainingAmount;
 }
 
-// Функция для генерации чека и добавления его в Firebase
+// Функция генерации чека и добавления его в Firebase
 function generateReceipt() {
     const fasonName = document.getElementById('modalTitle').innerText;
     const totalAmount = document.getElementById('totalAmount').innerText;
@@ -109,11 +116,13 @@ function generateReceipt() {
     const clientPhone = document.getElementById('clientPhone').value;
     const fasonImagePath = document.getElementById('fasonImagePath').value;
 
-    const addPocket = document.getElementById('addPocket').checked ? true : false;
-    const addReflector = document.getElementById('addReflector').checked ? true : false;
-    const addFrontLogo = document.getElementById('addFrontLogo').checked ? true : false;
-    const addBackLogo = document.getElementById('addBackLogo').checked ? true : false;
-    const addRibana = document.getElementById('addRibana').checked ? true : false;
+    const addPocketA = document.getElementById('addPocketA').checked ? true : false;
+    const addPocketB = document.getElementById('addPocketB').checked ? true : false;
+    const addPocketC = document.getElementById('addPocketC').checked ? true : false;
+
+    const removePocketA = document.getElementById('removePocketA').checked ? true : false;
+    const removePocketB = document.getElementById('removePocketB').checked ? true : false;
+    const removePocketC = document.getElementById('removePocketC').checked ? true : false;
 
     // Проверка обязательных полей
     if (!clientName || !clientPhone) {
@@ -134,11 +143,12 @@ function generateReceipt() {
         clientName: clientName,
         clientCompany: clientCompany,
         clientPhone: clientPhone,
-        addPocket: addPocket,
-        addReflector: addReflector,
-        addFrontLogo: addFrontLogo,
-        addBackLogo: addBackLogo,
-        addRibana: addRibana,
+        addPocketA: addPocketA,
+        addPocketB: addPocketB,
+        addPocketC: addPocketC,
+        removePocketA: removePocketA,
+        removePocketB: removePocketB,
+        removePocketC: removePocketC,
         fasonImagePath: fasonImagePath,
         timestamp: Date.now()
     })
@@ -155,7 +165,7 @@ function generateReceipt() {
 function printReceipt(button) {
     const receiptElement = button.closest('.receipt');
     if (!receiptElement) {
-        console.error('Receipt element not found');
+        console.error('Receipt элемент не найден');
         return;
     }
 
@@ -242,11 +252,12 @@ function renderReceipt(orderId, orderData) {
         clientName,
         clientCompany,
         clientPhone,
-        addPocket,
-        addReflector,
-        addFrontLogo,
-        addBackLogo,
-        addRibana,
+        addPocketA,
+        addPocketB,
+        addPocketC,
+        removePocketA,
+        removePocketB,
+        removePocketC,
         fasonImagePath,
         timestamp
     } = orderData;
@@ -270,11 +281,12 @@ function renderReceipt(orderId, orderData) {
             <h3>Чек №${timestamp}</h3>
             <p><strong>Фасон:</strong> ${fasonName}</p>
             <p><strong>Цвет:</strong> ${color || 'Не выбран'}</p>
-            ${addPocket ? `<p>Добавлен карман (10 000 сум)</p>` : ''}
-            ${addReflector ? `<p>Добавлен отражатель (10 000 сум)</p>` : ''}
-            ${addFrontLogo ? `<p>Добавлен логотип спереди (10 000 сум)</p>` : ''}
-            ${addBackLogo ? `<p>Добавлен логотип сзади (10 000 сум)</p>` : ''}
-            ${addRibana ? `<p>Добавлена рибана (10 000 сум)</p>` : ''}
+            ${addPocketA ? `<p>Добавлен карман Тип А (+10 000 сум)</p>` : ''}
+            ${addPocketB ? `<p>Добавлен карман Тип Б (+15 000 сум)</p>` : ''}
+            ${addPocketC ? `<p>Добавлен карман Тип В (+20 000 сум)</p>` : ''}
+            ${removePocketA ? `<p>Убран карман Тип А (-10 000 сум)</p>` : ''}
+            ${removePocketB ? `<p>Убран карман Тип Б (-15 000 сум)</p>` : ''}
+            ${removePocketC ? `<p>Убран карман Тип В (-20 000 сум)</p>` : ''}
             ${notes ? `<p><strong>Примечание:</strong> ${notes}</p>` : ''}
             <p class="totalAmount"><strong>Итоговая сумма:</strong> ${totalAmount} сум</p>
             <p class="depositAmount"><strong>Залог:</strong> ${depositAmount} сум</p>
