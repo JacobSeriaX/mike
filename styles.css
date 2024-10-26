@@ -1,4 +1,4 @@
-/* styles.css */
+/* style.css */
 
 /* CSS-переменные для цветовой схемы и других общих свойств */
 :root {
@@ -22,7 +22,7 @@
 body {
     font-family: var(--font-family);
     background-color: var(--secondary-color);
-    color: #2c3e50; /* Основной цвет текста */
+    color: #2c3e50;
     line-height: 1.6;
     min-height: 100vh;
     display: flex;
@@ -81,7 +81,7 @@ section input[type="text"]:focus {
 /* Каталог товаров */
 .catalog-items {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Три колонки */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
     justify-items: center;
 }
@@ -97,6 +97,16 @@ section input[type="text"]:focus {
     width: 100%;
     max-width: 300px;
     cursor: pointer;
+    position: relative;
+    padding: 10px;
+}
+
+.item input.selectFason {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    transform: scale(1.5);
+    cursor: pointer;
 }
 
 .item:hover {
@@ -106,7 +116,7 @@ section input[type="text"]:focus {
 
 .item img {
     width: 100%;
-    height: auto;
+    height: 200px;
     object-fit: cover;
 }
 
@@ -126,10 +136,29 @@ section input[type="text"]:focus {
     color: #555;
 }
 
+/* Кнопка оформления заказа */
+.order-button {
+    display: block;
+    margin: 20px auto 0;
+    padding: 10px 20px;
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+.order-button:hover {
+    background-color: #1e8449;
+    transform: translateY(-2px);
+}
+
 /* Секция Чеков */
 .receipts-list {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Три колонки */
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 20px;
     justify-items: center;
 }
@@ -140,27 +169,52 @@ section input[type="text"]:focus {
     padding: 20px;
     border-radius: 10px;
     width: 100%;
-    max-width: 600px; /* Увеличиваем максимальную ширину для размещения деталей */
+    max-width: 800px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     animation: fadeIn var(--transition-speed) ease-in-out;
     position: relative;
     display: flex;
-    flex-direction: row; /* Размещаем элементы в строку */
+    flex-direction: column;
     align-items: flex-start;
 }
 
-.receipt-details {
-    width: 60%; /* Ширина деталей */
+.fasons-container {
     display: flex;
     flex-direction: column;
+    gap: 15px;
+    margin-bottom: 15px;
 }
 
-.receipt img {
-    width: 40%; /* Ширина изображения */
-    height: auto;
+.receipt-fason {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.receipt-fason img {
+    width: 100px;
+    height: 100px;
     object-fit: cover;
     border-radius: 5px;
-    margin-left: 20px; /* Отступ слева от деталей */
+    margin-right: 15px;
+}
+
+.receipt-fason-details h4 {
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.receipt-fason-details p {
+    color: #555;
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+}
+
+.receipt-details {
+    width: 100%;
 }
 
 .receipt-details h3 {
@@ -239,7 +293,7 @@ section input[type="text"]:focus {
     padding: 30px;
     border-radius: 10px;
     width: 90%;
-    max-width: 800px; /* Увеличиваем максимальную ширину для двух колонок */
+    max-width: 800px;
     position: relative;
     animation: slideDown var(--transition-speed) ease-in-out;
 }
@@ -362,12 +416,11 @@ form button:hover {
 @media (max-width: 1024px) {
     .catalog-items,
     .receipts-list {
-        grid-template-columns: repeat(2, 1fr); /* Две колонки на средних экранах */
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    /* Изменение максимальной ширины чеков на средних экранах */
     .receipt {
-        max-width: 500px;
+        max-width: 700px;
     }
 
     .modal-content {
@@ -375,14 +428,14 @@ form button:hover {
     }
 
     .form-container {
-        flex-direction: row;
+        flex-direction: column;
     }
 }
 
 @media (max-width: 768px) {
     .catalog-items,
     .receipts-list {
-        grid-template-columns: 1fr; /* Одна колонка на маленьких экранах */
+        grid-template-columns: 1fr;
     }
 
     header h1 {
@@ -396,7 +449,7 @@ form button:hover {
 
     .modal-content {
         padding: 20px;
-        max-width: 90%;
+        max-width: 95%;
     }
 
     .form-container {
@@ -408,7 +461,6 @@ form button:hover {
         padding: 10px 15px;
     }
 
-    /* Изменение направления Flexbox для чеков на маленьких экранах */
     .receipt {
         flex-direction: column;
         align-items: center;
@@ -422,6 +474,25 @@ form button:hover {
     .receipt img {
         width: 80%;
         margin-left: 0;
+    }
+
+    .receipt-fason {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .receipt-fason img {
+        margin-bottom: 10px;
+    }
+
+    .form-left, .form-right {
+        width: 100%;
+    }
+
+    .selected-fason-img,
+    .receipt-fason img {
+        width: 80px;
+        height: 80px;
     }
 }
 
@@ -458,6 +529,7 @@ form button:hover {
 /* Стиль для контейнера формы */
 .form-container {
     display: flex;
+    flex-wrap: wrap;
     gap: 20px;
 }
 
@@ -474,4 +546,130 @@ form button:hover {
 
 .form-left label, .form-right label {
     margin-bottom: 10px;
+}
+
+/* Стиль для выбранных фасонов в модальном окне */
+.selected-fason {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.selected-fason-img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.selected-fason-details h4 {
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.selected-fason-details p {
+    color: #555;
+}
+
+.options {
+    margin-top: 15px;
+}
+
+.options h5 {
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+}
+
+.options .option-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.options label {
+    width: calc(50% - 10px);
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.options input[type="checkbox"] {
+    margin-right: 5px;
+    transform: scale(1.2);
+}
+
+/* Стилизация навигационных кнопок */
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.navigation-buttons button {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+.navigation-buttons button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.navigation-buttons button:hover:not(:disabled) {
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+/* Печать чека */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .receipt, .receipt * {
+        visibility: visible;
+    }
+    .receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        overflow: hidden;
+        page-break-after: avoid;
+        box-shadow: none;
+    }
+    .button-group {
+        display: none;
+    }
+    .receipt-fason img {
+        width: 60px;
+        height: 60px;
+    }
+    .receipt-details {
+        font-size: 12px;
+    }
+    .receipt-fason-details h4 {
+        font-size: 14px;
+    }
+    .receipt-fason-details p {
+        font-size: 12px;
+    }
+    .receipt-details h3 {
+        font-size: 16px;
+    }
 }
