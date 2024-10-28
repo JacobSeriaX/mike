@@ -12,7 +12,7 @@ import {
     remove
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-// Конфигурация Firebase
+// Конфигурация Firebase (замените на ваши реальные данные)
 const firebaseConfig = {
     apiKey: "AIzaSyCDANEx7FB-U9Wj8ZItneroCA_sfmEUYAU",
     authDomain: "pechat-61e3f.firebaseapp.com",
@@ -294,6 +294,10 @@ function nextStep() {
             // Сохраняем размер в объекте фасона
             selectedFasons[currentStep].size = sizeInput.value.trim();
         }
+
+        // Сохраняем выбранные опции
+        const options = getOptionsForFason(currentStep);
+        selectedFasons[currentStep].options = options;
     } else {
         // Валидация деталей клиента
         const clientName = document.getElementById('clientName');
@@ -325,6 +329,125 @@ function prevStep() {
     }
 }
 
+// Функция обновления итоговой суммы для текущего фасона
+function updateTotal() {
+    if (currentStep < selectedFasons.length) {
+        const fason = selectedFasons[currentStep];
+        const index = currentStep;
+
+        const options = getOptionsForFason(index);
+        selectedFasons[currentStep].options = options; // Сохраняем опции
+
+        const optionsTotal = Object.values(options).reduce((sum, val) => sum + val, 0);
+        const total = fason.price + optionsTotal;
+
+        const fasonTotalElement = document.getElementById(`fasonTotal_${index}`);
+        if (fasonTotalElement) {
+            fasonTotalElement.innerText = `${total} сум`;
+        }
+
+        // Обновляем общую сумму и оставшуюся сумму, если находимся на шаге деталей клиента
+        const totalAmountDisplay = document.getElementById('totalAmountDisplay');
+        if (totalAmountDisplay) {
+            totalAmountDisplay.innerText = `${calculateTotalAmount()} сум`;
+        }
+
+        const remainingAmountDisplay = document.getElementById('remainingAmountDisplay');
+        if (remainingAmountDisplay) {
+            const depositInput = document.getElementById('depositAmount');
+            const depositAmount = depositInput ? parseInt(depositInput.value, 10) || 0 : 0;
+            remainingAmountDisplay.innerText = `${calculateTotalAmount() - depositAmount} сум`;
+        }
+    }
+}
+
+// Функция расчета общей суммы
+function calculateTotalAmount() {
+    let total = 0;
+    selectedFasons.forEach((fason, index) => {
+        const options = fason.options || {};
+        const optionsTotal = Object.values(options).reduce((sum, val) => sum + val, 0);
+        const itemTotal = fason.price + optionsTotal;
+        total += itemTotal;
+    });
+
+    return total;
+}
+
+// Функция обновления оставшейся суммы
+function updateBalance() {
+    const totalAmount = calculateTotalAmount();
+    const depositAmountElement = document.getElementById('depositAmount');
+    const depositAmount = depositAmountElement ? parseInt(depositAmountElement.value, 10) || 0 : 0;
+    const remainingAmount = totalAmount - depositAmount;
+
+    const remainingAmountDisplay = document.getElementById('remainingAmountDisplay');
+    if (remainingAmountDisplay) {
+        remainingAmountDisplay.innerText = `${remainingAmount} сум`;
+    }
+}
+
+// Функция получения опций для фасона
+function getOptionsForFason(index) {
+    const addPocketA = document.getElementById(`addPocketA_${index}`);
+    const addPocketB1 = document.getElementById(`addPocketB1_${index}`);
+    const addPocketC = document.getElementById(`addPocketC_${index}`);
+    const removePocketA = document.getElementById(`removePocketA_${index}`);
+    const removePocketB1 = document.getElementById(`removePocketB1_${index}`);
+    const removePocketC = document.getElementById(`removePocketC_${index}`);
+
+    return {
+        addPocketA: addPocketA && addPocketA.checked ? parseInt(addPocketA.value, 10) : 0,
+        addPocketB1: addPocketB1 && addPocketB1.checked ? parseInt(addPocketB1.value, 10) : 0,
+        addPocketC: addPocketC && addPocketC.checked ? parseInt(addPocketC.value, 10) : 0,
+        removePocketA: removePocketA && removePocketA.checked ? parseInt(removePocketA.value, 10) : 0,
+        removePocketB1: removePocketB1 && removePocketB1.checked ? parseInt(removePocketB1.value, 10) : 0,
+        removePocketC: removePocketC && removePocketC.checked ? parseInt(removePocketC.value, 10) : 0
+    };
+}
+
+// Функция получения детальной информации об опциях
+function getOptionsDetails(options) {
+    const details = [];
+    if (options.addPocketA !== 0) {
+        details.push({
+            name: "Добавлен карман Накладной",
+            value: options.addPocketA
+        });
+    }
+    if (options.addPocketB1 !== 0) {
+        details.push({
+            name: "Добавлен карман Двухслойный",
+            value: options.addPocketB1
+        });
+    }
+    if (options.addPocketC !== 0) {
+        details.push({
+            name: "Добавлен карман Широкий",
+            value: options.addPocketC
+        });
+    }
+    if (options.removePocketA !== 0) {
+        details.push({
+            name: "Убран карман Накладной",
+            value: options.removePocketA
+        });
+    }
+    if (options.removePocketB1 !== 0) {
+        details.push({
+            name: "Убран карман Двухслойный",
+            value: options.removePocketB1
+        });
+    }
+    if (options.removePocketC !== 0) {
+        details.push({
+            name: "Убран карман Широкий",
+            value: options.removePocketC
+        });
+    }
+    return details;
+}
+
 // Функция генерации чека и добавления его в Firebase
 function generateReceipt() {
     const totalAmount = calculateTotalAmount();
@@ -351,7 +474,7 @@ function generateReceipt() {
     const formattedFasons = selectedFasons.map((fason, index) => {
         const size = fason.size || '';
 
-        const options = getOptionsForFason(index);
+        const options = fason.options || {};
 
         const optionsDetails = getOptionsDetails(options);
 
@@ -367,9 +490,6 @@ function generateReceipt() {
             total: total
         };
     });
-
-    // Логирование для отладки
-    console.log("Formatted Fasons:", formattedFasons);
 
     // Сохранение заказа в Firebase Realtime Database
     const ordersRef = ref(database, 'orders');
@@ -396,105 +516,6 @@ function generateReceipt() {
     .catch((error) => {
         alert("Ошибка при сохранении заказа: " + error.message);
     });
-}
-
-// Функция получения детальной информации об опциях
-function getOptionsDetails(options) {
-    const details = [];
-    if (options.addPocketA !== 0) {
-        details.push({ 
-            name: options.addPocketA > 0 ? "Добавлен карман Накладной" : "Убран карман Накладной", 
-            value: options.addPocketA 
-        });
-    }
-    if (options.addPocketB1 !== 0) {
-        details.push({ 
-            name: options.addPocketB1 > 0 ? "Добавлен карман Двухслойный" : "Убран карман Двухслойный", 
-            value: options.addPocketB1 
-        });
-    }
-    if (options.addPocketC !== 0) {
-        details.push({ 
-            name: options.addPocketC > 0 ? "Добавлен карман Широкий" : "Убран карман Широкий", 
-            value: options.addPocketC 
-        });
-    }
-    return details;
-}
-
-// Функция расчета общей суммы
-function calculateTotalAmount() {
-    let total = 0;
-    selectedFasons.forEach((fason, index) => {
-        const options = getOptionsForFason(index);
-        const optionsTotal = Object.values(options).reduce((sum, val) => sum + val, 0);
-        const itemTotal = fason.price + optionsTotal;
-        total += itemTotal;
-    });
-
-    return total;
-}
-
-// Функция получения опций для фасона
-function getOptionsForFason(index) {
-    const addPocketA = document.getElementById(`addPocketA_${index}`);
-    const addPocketB1 = document.getElementById(`addPocketB1_${index}`);
-    const addPocketC = document.getElementById(`addPocketC_${index}`);
-    const removePocketA = document.getElementById(`removePocketA_${index}`);
-    const removePocketB1 = document.getElementById(`removePocketB1_${index}`);
-    const removePocketC = document.getElementById(`removePocketC_${index}`);
-
-    return {
-        addPocketA: addPocketA && addPocketA.checked ? parseInt(addPocketA.value, 10) : 0,
-        addPocketB1: addPocketB1 && addPocketB1.checked ? parseInt(addPocketB1.value, 10) : 0,
-        addPocketC: addPocketC && addPocketC.checked ? parseInt(addPocketC.value, 10) : 0,
-        removePocketA: removePocketA && removePocketA.checked ? parseInt(removePocketA.value, 10) : 0,
-        removePocketB1: removePocketB1 && removePocketB1.checked ? parseInt(removePocketB1.value, 10) : 0,
-        removePocketC: removePocketC && removePocketC.checked ? parseInt(removePocketC.value, 10) : 0
-    };
-}
-
-// Функция обновления итоговой суммы для текущего фасона
-function updateTotal() {
-    if (currentStep < selectedFasons.length) {
-        const fason = selectedFasons[currentStep];
-        const index = currentStep;
-
-        const options = getOptionsForFason(index);
-        const optionsTotal = Object.values(options).reduce((sum, val) => sum + val, 0);
-        const total = fason.price + optionsTotal;
-
-        const fasonTotalElement = document.getElementById(`fasonTotal_${index}`);
-        if (fasonTotalElement) {
-            fasonTotalElement.innerText = `${total} сум`;
-        }
-
-        // Обновляем общую сумму и оставшуюся сумму, если находимся на шаге деталей клиента
-        const totalAmountDisplay = document.getElementById('totalAmountDisplay');
-        if (totalAmountDisplay) {
-            totalAmountDisplay.innerText = `${calculateTotalAmount()} сум`;
-        }
-
-        const remainingAmountDisplay = document.getElementById('remainingAmountDisplay');
-        if (remainingAmountDisplay) {
-            const depositInput = document.getElementById('depositAmount');
-            const depositAmount = depositInput ? parseInt(depositInput.value, 10) || 0 : 0;
-            remainingAmountDisplay.innerText = `${calculateTotalAmount() - depositAmount} сум`;
-        }
-    }
-}
-
-// Функция обновления оставшейся суммы
-function updateBalance() {
-    const totalAmount = calculateTotalAmount();
-    const depositAmountElement = document.getElementById('depositAmount');
-    const depositAmount = depositAmountElement ? parseInt(depositAmountElement.value, 10) || 0 : 0;
-    const remainingAmount = totalAmount - depositAmount;
-
-    const remainingAmountDisplay = document.getElementById('remainingAmountDisplay');
-    if (remainingAmountDisplay) {
-        remainingAmountDisplay.innerText = `${remainingAmount} сум`;
-    }
 }
 
 // Функция создания и добавления чека в DOM с поддержкой нескольких фасонов
@@ -535,7 +556,7 @@ function renderReceipt(orderId, orderData) {
                 optionsHTML += `<p>${option.name} (${option.value > 0 ? '+' : ''}${option.value} сум)</p>`;
             });
         } else {
-            optionsHTML = `<p>Нет дополнительных опций</p>`;
+            optionsHTML = '<p>Нет дополнительных опций</p>';
         }
 
         fasonsHTML += `
@@ -766,13 +787,12 @@ function searchReceipts() {
     });
 }
 
-// Установка слушателя для новых заказов
+// Установка слушателей для новых и удаленных заказов
 const ordersRef = ref(database, 'orders');
 onChildAdded(ordersRef, (data) => {
     renderReceipt(data.key, data.val());
 });
 
-// Установка слушателя для удаленных заказов
 onChildRemoved(ordersRef, (data) => {
     const receiptToRemove = document.querySelector(`.receipt[data-id="${data.key}"]`);
     if (receiptToRemove) {
