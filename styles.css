@@ -1,4 +1,4 @@
-/* style.css */
+/* styles.css */
 
 /* CSS-переменные для цветовой схемы и других общих свойств */
 :root {
@@ -195,8 +195,8 @@ section input[type="text"]:focus {
 }
 
 .receipt-fason img {
-    width: 100px;
-    height: 100px;
+    width: 150px; /* Увеличенная ширина */
+    height: 150px; /* Увеличенная высота */
     object-fit: cover;
     border-radius: 5px;
     margin-right: 15px;
@@ -643,26 +643,61 @@ form button:hover {
         overflow: hidden;
         page-break-after: avoid;
         box-shadow: none;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
     }
     .button-group {
         display: none;
     }
+
+    /* Настройка контейнера фасонов */
+    .fasons-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    /* Фасоны отображаются рядом */
+    .receipt-fason {
+        width: calc(50% - 15px); /* Два фасона в строке с учётом gap */
+        background-color: transparent;
+        padding: 0;
+        margin-bottom: 15px;
+    }
+
     .receipt-fason img {
-        width: 60px;
-        height: 60px;
+        width: 200px; /* Увеличенная ширина */
+        height: 200px; /* Увеличенная высота */
+        object-fit: cover;
+        border-radius: 5px;
+        margin-right: 0;
+        margin-bottom: 10px;
     }
+
+    .receipt-fason-details {
+        width: 100%;
+    }
+
     .receipt-details {
-        font-size: 12px;
+        font-size: 14px;
+        width: 45%; /* Занимает правую половину */
+        padding-left: 20px; /* Отступ слева для разделения */
     }
-    .receipt-fason-details h4 {
+
+    .receipt-details h3 {
+        font-size: 18px;
+    }
+
+    .receipt-details p,
+    .receipt-details li {
         font-size: 14px;
     }
-    .receipt-fason-details p {
-        font-size: 12px;
-    }
-    .receipt-details h3 {
+
+    .receipt-details h4 {
         font-size: 16px;
     }
+
     ul {
         list-style-type: disc;
         margin-left: 20px;
@@ -841,4 +876,3 @@ form button:hover {
 .modal-content form {
     width: 100%;
 }
-
